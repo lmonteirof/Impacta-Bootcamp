@@ -1,26 +1,27 @@
 resource "aws_instance" "vm-cliente" {
-  ami                         = "cliente-srvapp-image"
-  instance_type               = "t2.large"
-  subnet_id                   = "cliente-private-subnet-id"
+  ami                         = "minha_imagem_WinSrv"
+  instance_type               = "t3.large"
   associate_public_ip_address = false
-  vpc_id                      = "minha-vpc-id"
-  cidr_block                  = "10.1.0.0/16"
-  availavailability_zone      = "us-east-1"
+  subnet_id                   = "subnet-09f950de2c1f2517e"
+  security_groups             = [aws_security_group.sg-cliente.id]
 
   provisioner "local-exec" {
-    command = "C:\\padrao\\configura.ps1"
+    command     = "C://padrao//configura.ps1"
     interpreter = ["Powershell"]
   }
 
   tags = {
-    Name = format("cliente-",terraform.workspace)
+    Name = "cliente-${terraform.workspace}"
   }
 }
 
 resource "aws_security_group" "sg-cliente" {
-  name        = format("sg-", terraform.workspace)
   description = "Allow RDP access by VPN"
-  vpc_id      = "minha-private-subnet-id"
+  vpc_id      = "vpc-09460e9ee0da24b00"
+
+  tags = {
+    Name = "cliente-${terraform.workspace}"
+  }
 
   ingress = [
     {
